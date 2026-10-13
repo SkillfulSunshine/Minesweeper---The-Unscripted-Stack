@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minesweeper</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="sprite" aria-hidden="true">
+    <defs>
+      <radialGradient id="bomb" cx="35%" cy="30%" r="75%">
+        <stop offset="0%" stop-color="#7a7a7a"/>
+        <stop offset="42%" stop-color="#2b2b2b"/>
+        <stop offset="100%" stop-color="#050505"/>
+      </radialGradient>
+      <radialGradient id="skin" cx="36%" cy="30%" r="72%">
+        <stop offset="0%" stop-color="#ffe98a"/>
+        <stop offset="48%" stop-color="#f5c400"/>
+        <stop offset="100%" stop-color="#c88800"/>
+      </radialGradient>
+      <radialGradient id="lens" cx="30%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="#5c5c5c"/>
+        <stop offset="100%" stop-color="#141414"/>
+      </radialGradient>
+    </defs>
+
+    <symbol id="icon-mine" viewBox="0 0 16 16">
+      <g fill="#161616">
+        <rect x="7.2" y="0.3" width="1.6" height="15.4" rx="0.4"/>
+        <rect x="0.3" y="7.2" width="15.4" height="1.6" rx="0.4"/>
+        <rect x="7.2" y="0.3" width="1.6" height="15.4" rx="0.4" transform="rotate(45 8 8)"/>
+        <rect x="7.2" y="0.3" width="1.6" height="15.4" rx="0.4" transform="rotate(-45 8 8)"/>
+      </g>
+      <circle cx="8" cy="8" r="3.55" fill="url(#bomb)"/>
+      <circle cx="6.55" cy="6.45" r="1.15" fill="#f4f4f4"/>
+      <circle cx="6.85" cy="6.75" r="0.4" fill="#ffffff"/>
+    </symbol>
+
+    <symbol id="icon-flag" viewBox="0 0 16 16">
+      <path d="M3.4 13.7h6.4" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M4.6 12.5h4.2" stroke="#1a1a1a" stroke-width="1.15" stroke-linecap="round"/>
+      <path d="M5.15 13.2V2.15" stroke="#3f3f3f" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M5.7 2.35h.55L12.15 5.15 6.25 7.7H5.7z" fill="#d10f0f"/>
+      <path d="M5.7 2.35 12.15 5.15 6.25 5.15z" fill="#ff4a3d"/>
+      <path d="M6.05 2.7 10.4 4.55" stroke="#ffd0cc" stroke-width="0.45" stroke-linecap="round" opacity="0.85"/>
+    </symbol>
+
+    <symbol id="face-smile" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14.2" fill="url(#skin)" stroke="#b87a00" stroke-width="0.7"/>
+      <ellipse cx="11" cy="13.2" rx="1.55" ry="2.15" fill="#1a1a1a"/>
+      <ellipse cx="21" cy="13.2" rx="1.55" ry="2.15" fill="#1a1a1a"/>
+      <path d="M9.2 18.4c1.5 3.5 3.8 5 6.8 5s5.3-1.5 6.8-5" fill="none" stroke="#1a1a1a" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="face-oh" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14.2" fill="url(#skin)" stroke="#b87a00" stroke-width="0.7"/>
+      <ellipse cx="11" cy="13" rx="1.7" ry="2.3" fill="#1a1a1a"/>
+      <ellipse cx="21" cy="13" rx="1.7" ry="2.3" fill="#1a1a1a"/>
+      <ellipse cx="16" cy="21.2" rx="3.1" ry="3.5" fill="#1a1a1a"/>
+      <ellipse cx="15.2" cy="20.2" rx="1.1" ry="1.3" fill="#5a4030" opacity="0.35"/>
+    </symbol>
+
+    <symbol id="face-dead" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14.2" fill="url(#skin)" stroke="#b87a00" stroke-width="0.7"/>
+      <path d="M8.6 10.4 13.2 15M13.2 10.4 8.6 15" stroke="#1a1a1a" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M18.8 10.4 23.4 15M23.4 10.4 18.8 15" stroke="#1a1a1a" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M10 23.2c1.5-2.8 3.4-4 6-4s4.5 1.2 6 4" fill="none" stroke="#1a1a1a" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="face-cool" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14.2" fill="url(#skin)" stroke="#b87a00" stroke-width="0.7"/>
+      <path d="M4.2 13.6 7.2 12.8" stroke="#1a1a1a" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M27.8 13.6 24.8 12.8" stroke="#1a1a1a" stroke-width="1.3" stroke-linecap="round"/>
+      <rect x="6.4" y="11.1" width="8.2" height="6.1" rx="1.1" fill="url(#lens)" stroke="#111" stroke-width="0.6"/>
+      <rect x="17.4" y="11.1" width="8.2" height="6.1" rx="1.1" fill="url(#lens)" stroke="#111" stroke-width="0.6"/>
+      <path d="M14.6 13.6h2.8" stroke="#1a1a1a" stroke-width="1.4"/>
+      <path d="M7.4 12.2h3.2" stroke="#ffffff" stroke-width="0.7" opacity="0.45" stroke-linecap="round"/>
+      <path d="M18.4 12.2h3.2" stroke="#ffffff" stroke-width="0.7" opacity="0.45" stroke-linecap="round"/>
+      <path d="M9.6 20.2c1.4 2.8 3.6 4 6.4 4s5-1.2 6.4-4" fill="none" stroke="#1a1a1a" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+  </svg>
+
+  <div class="desktop">
+    <div class="window">
+      <div class="titlebar">
+        <svg class="app-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#icon-mine"></use></svg>
+        <span class="title">Minesweeper</span>
+      </div>
+
+      <div class="menubar">
+        <div class="menu">
+          <button type="button" class="menu-label" id="game-menu-btn" aria-expanded="false" aria-haspopup="true" aria-controls="game-menu">Game</button>
+          <div class="menu-pop" id="game-menu" role="menu" hidden>
+            <button type="button" role="menuitem" data-action="new">New<span class="accel">F2</span></button>
+            <div class="sep" role="separator"></div>
+            <button type="button" role="menuitem" data-action="difficulty" data-difficulty="easy"><span class="tick" hidden></span>Easy</button>
+            <button type="button" role="menuitem" data-action="difficulty" data-difficulty="medium"><span class="tick" hidden></span>Medium</button>
+            <button type="button" role="menuitem" data-action="difficulty" data-difficulty="difficult"><span class="tick" hidden></span>Difficult</button>
+            <div class="sep" role="separator"></div>
+            <button type="button" role="menuitem" data-action="marks"><span class="tick" id="marks-tick"></span>Marks</button>
+            <button type="button" role="menuitem" data-action="best">Best Times</button>
+          </div>
+        </div>
+        <div class="menu">
+          <button type="button" class="menu-label" id="help-menu-btn" aria-expanded="false" aria-haspopup="true" aria-controls="help-menu">Help</button>
+          <div class="menu-pop" id="help-menu" role="menu" hidden>
+            <button type="button" role="menuitem" data-action="about">About</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="client">
+        <div class="status">
+          <div class="readout" id="mine-readout" role="img" aria-label="Mines remaining 10"></div>
+          <button type="button" class="smiley" id="smiley" aria-label="New game">
+            <svg class="face" viewBox="0 0 32 32" aria-hidden="true"><use id="face-use" href="#face-smile"></use></svg>
+          </button>
+          <div class="readout" id="time-readout" role="img" aria-label="Time 0 seconds"></div>
+        </div>
+        <div class="well">
+          <div class="board" id="board" aria-label="Minefield"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="about-overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="about-title">
+      <div class="titlebar">
+        <svg class="app-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#icon-mine"></use></svg>
+        <span class="title" id="about-title">About Minesweeper</span>
+      </div>
+      <div class="dialog-body">
+        <p>Clear every safe square. A number tells how many mines touch that square. Right-click to flag a mine, or mark it with a question if you are unsure.</p>
+        <p>The first opening click is never a mine. Press both mouse buttons, or the middle button, on a number to open the squares around it when the flags match.</p>
+        <div class="dialog-actions">
+          <button type="button" class="win-btn" id="about-ok">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="record-overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="record-title">
+      <div class="titlebar">
+        <svg class="app-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#icon-mine"></use></svg>
+        <span class="title" id="record-title">Best Time</span>
+      </div>
+      <form class="dialog-body" id="record-form">
+        <p id="record-copy">You have the fastest time.</p>
+        <label class="name-label" for="record-name">Enter your name</label>
+        <input class="name-input" id="record-name" name="player" maxlength="32" autocomplete="nickname" spellcheck="false">
+        <div class="dialog-actions">
+          <button type="submit" class="win-btn">OK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="best-overlay" hidden>
+    <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="best-title">
+      <div class="titlebar">
+        <svg class="app-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#icon-mine"></use></svg>
+        <span class="title" id="best-title">Best Times</span>
+      </div>
+      <div class="dialog-body">
+        <table class="times">
+          <tbody>
+            <tr>
+              <th scope="row">Easy</th>
+              <td id="time-easy">999</td>
+              <td id="name-easy">Anonymous</td>
+            </tr>
+            <tr>
+              <th scope="row">Medium</th>
+              <td id="time-medium">999</td>
+              <td id="name-medium">Anonymous</td>
+            </tr>
+            <tr>
+              <th scope="row">Difficult</th>
+              <td id="time-difficult">999</td>
+              <td id="name-difficult">Anonymous</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="dialog-actions">
+          <button type="button" class="win-btn" id="best-reset">Reset</button>
+          <button type="button" class="win-btn" id="best-ok">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sr" id="live" aria-live="polite"></div>
+  <script src="game.js"></script>
+</body>
+</html>
